@@ -1,14 +1,12 @@
-import { useState } from 'react';
-
+import { useState, useContext } from 'react';
+import { UserContext } from '../../contexts/user.context'; 
 import FormInput from '../form-input/form-input.component';
 import Button from '../button/button.component';
-
 import {
   signInWithGooglePopup,
   createUserDocumentFromAuth,
   signInAuthUserWithEmailAndPassword, 
 } from '../../utils/firebase/firebase.utils';
-
 import './sign-in-form.styles.scss';
 
 const defaultFormFields = {
@@ -19,6 +17,7 @@ const defaultFormFields = {
 const SignInForm = () => {
   const [formFields, setFormFields] = useState(defaultFormFields);
   const { email, password } = formFields;
+  const { setCurrentUser } = useContext(UserContext);
 
   const resetFormFields = () => {
     setFormFields(defaultFormFields);
@@ -27,25 +26,23 @@ const SignInForm = () => {
   const signInWithGoogle = async () => {
     const { user } = await signInWithGooglePopup();
     await createUserDocumentFromAuth(user);
+    setCurrentUser(user); // Update context
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
-      const response = await signInAuthUserWithEmailAndPassword(
-        email,
-        password
-      );
-      console.log(response);
+      const { user } = await signInAuthUserWithEmailAndPassword(email, password);
+      setCurrentUser(user); // Update context
       resetFormFields();
     } catch (error) {
       switch (error.code) {
         case 'auth/wrong-password':
-          alert('incorrect password for email');
+          alert('Incorrect password for email');
           break;
         case 'auth/user-not-found':
-          alert('no user associated with this email');
+          alert('No user associated with this email');
           break;
         default:
           console.log(error);
@@ -55,7 +52,6 @@ const SignInForm = () => {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-
     setFormFields({ ...formFields, [name]: value });
   };
 
@@ -72,7 +68,6 @@ const SignInForm = () => {
           name='email'
           value={email}
         />
-
         <FormInput
           label='Password'
           type='password'
@@ -84,7 +79,7 @@ const SignInForm = () => {
         <div className='buttons-container'>
           <Button type='submit'>Sign In</Button>
           <Button type='button' buttonType='google' onClick={signInWithGoogle}>
-            Google sign in
+            Google Sign In
           </Button>
         </div>
       </form>
