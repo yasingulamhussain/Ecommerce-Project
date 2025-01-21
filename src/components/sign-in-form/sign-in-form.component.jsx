@@ -1,5 +1,4 @@
-import { useState, useContext } from 'react';
-import { UserContext } from '../../contexts/user.context'; 
+import { useState } from 'react';
 import FormInput from '../form-input/form-input.component';
 import Button from '../button/button.component';
 import {
@@ -17,35 +16,45 @@ const defaultFormFields = {
 const SignInForm = () => {
   const [formFields, setFormFields] = useState(defaultFormFields);
   const { email, password } = formFields;
-  const { setCurrentUser } = useContext(UserContext);
 
   const resetFormFields = () => {
     setFormFields(defaultFormFields);
   };
 
   const signInWithGoogle = async () => {
-    const { user } = await signInWithGooglePopup();
-    await createUserDocumentFromAuth(user);
-    setCurrentUser(user); // Update context
+    try {
+      const { user } = await signInWithGooglePopup();
+      console.log('User signed in with Google ' + email);
+    } catch (error) {
+      console.log(error);
+      switch (error.code) {
+        case 'auth/account-exists-with-different-credential':
+          alert('An account already exists with the same email address but different sign-in credentials');
+          break;
+        case 'auth/user-disabled':
+          alert('The user account has been disabled by an administrator');
+          break;
+        default:
+          console.log(error.code);
+      }
+    }
   };
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
       const { user } = await signInAuthUserWithEmailAndPassword(email, password);
-      setCurrentUser(user); // Update context
+      // console.log('User signed in '+email);
       resetFormFields();
     } catch (error) {
       switch (error.code) {
-        case 'auth/wrong-password':
+        case 'auth/invalid-credential':
           alert('Incorrect password for email');
           break;
-        case 'auth/user-not-found':
-          alert('No user associated with this email');
-          break;
         default:
-          console.log(error);
+          console.log(error.code);
       }
     }
   };
