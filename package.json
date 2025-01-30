@@ -10,6 +10,7 @@
     "react-router-dom": "6",
     "react-scripts": "5.0.1",
     "sass": "^1.83.1",
+    "styled-components": "^6.1.14",
     "web-vitals": "^4.2.4"
   },
   "scripts": {
@@ -35,5 +36,15 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.19.0",
+    "eslint": "^9.19.0",
+    "eslint-config-react-app": "^7.0.1",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.4",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "globals": "^15.14.0"
   }
 }
